@@ -24,10 +24,3 @@ yarn-error.log*
 
 # environment
 .env
-logs/**
-ssl/**
-*.txt
-*.log
-*.crt
-*.pem
-*.key
