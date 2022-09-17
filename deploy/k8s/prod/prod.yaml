@@ -6,29 +6,30 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gf-ob-web-service
+  name: gf-ob-web
   namespace: prod
+  labels:
+    app: gf-ob-web
 spec:
   type: NodePort
   selector:
     app: gf-ob-web
   ports:
-    - name: http
-      protocol: TCP
-      port: 80
+    - protocol: TCP
+      port: 3000
       targetPort: 3000
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gf-ob-web-deployment
+  name: gf-ob-web
   namespace: prod
   labels:
     app: gf-ob-web
   annotations:
     rollout: ""
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: gf-ob-web
@@ -41,10 +42,6 @@ spec:
         - name: gf-ob-web
           image: mucunga90/gf-ob-web:prod
           imagePullPolicy: Always
-          ports:
-            - name: http
-              protocol: TCP
-              containerPort: 3000
           envFrom:
             - secretRef:
                 name: gf-ob-web-secret
@@ -55,3 +52,8 @@ spec:
             requests:
               memory: 256Mi
               cpu: "0.2"
+
+# kubectl delete service gf-ob-web-service 
+# kubectl delete deployment gf-ob-web-deployment
+# kubectl delete persistentvolumeclaim gf-ob-web-service-pv-claim
+# kubectl delete persistentvolume gf-ob-web-service-pv-volume
