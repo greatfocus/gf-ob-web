@@ -51,10 +51,12 @@ jobs:
           name: repository
           path: |
             ${{ github.workspace }}/deploy
-            ${{ github.workspace }}/dist
-            ${{ github.workspace }}/app
+            ${{ github.workspace }}/build
             ${{ github.workspace }}/docker
+            ${{ github.workspace }}/public
+            ${{ github.workspace }}/src
             ${{ github.workspace }}/.dockerignore
+            ${{ github.workspace }}/package.json
 
   docker:
     needs: [setup]
