@@ -1,28 +1,22 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: stage
----
-apiVersion: v1
 kind: Service
 metadata:
-  name: gf-ob-web-service
-  namespace: stage
+  name: gf-ob-web
+  labels:
+    app: gf-ob-web
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gf-ob-web
   ports:
-    - name: http
-      protocol: TCP
+    - protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gf-ob-web-deployment
-  namespace: stage
+  name: gf-ob-web
   labels:
     app: gf-ob-web
   annotations:
@@ -38,16 +32,9 @@ spec:
         app: gf-ob-web
     spec:
       containers:
-        - name: golang
+        - name: gf-ob-web
           image: mucunga90/gf-ob-web:stage
           imagePullPolicy: Always
-          ports:
-            - name: http
-              protocol: TCP
-              containerPort: 8000
-          envFrom:
-            - secretRef:
-                name: gf-ob-web-secret
           resources:
             limits:
               memory: 512Mi
@@ -55,3 +42,10 @@ spec:
             requests:
               memory: 256Mi
               cpu: "0.2"
+          ports:
+            - containerPort: 80
+
+# kubectl delete service gf-ob-web-service 
+# kubectl delete deployment gf-ob-web
+# kubectl delete persistentvolumeclaim gf-ob-web-service-pv-claim
+# kubectl delete persistentvolume gf-ob-web-service-pv-volume

@@ -29,6 +29,9 @@ export const Obituaries = (props) => {
             <Spinner color="light" />
           </div>
         }
+        {
+          data
+        }
         <div className="row">
           <h2>{content ? content.title : "loading..."}</h2>
         </div>

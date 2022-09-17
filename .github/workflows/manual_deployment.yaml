@@ -17,158 +17,35 @@ on:
   
 jobs:
 
-  imports:
-    name: Imports
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: check
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: imports
-        token: ${{ secrets.DEPLOY_ACCESS }}
-
-  errcheck:
-    name: Errcheck
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: check
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: errcheck
-        token: ${{ secrets.DEPLOY_ACCESS }}
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.18
-
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - name: Lint Go Code
-        run: |
-          export PATH=$PATH:$(go env GOPATH)/bin # temporary fix. See https://github.com/actions/setup-go/issues/14
-          go get -u golang.org/x/lint/golint 
-          make lint
-
-  shadow:
-    name: Shadow
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: check
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: shadow
-        token: ${{ secrets.DEPLOY_ACCESS }}
-
-  staticcheck:
-    name: StaticCheck
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: check
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: staticcheck
-        token: ${{ secrets.DEPLOY_ACCESS }}
-
-  sec:
-    name: Sec
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: check
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: sec
-        token: ${{ secrets.DEPLOY_ACCESS }}
-        flags: "-exclude=G104"
-
-  test:
+  build_test:
     name: Test
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        go: ["1.18"]
-    runs-on: ${{ matrix.os }}
+        node-version: [12.x] # We will deploy with only one version of node  
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v1
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
         with:
-          go-version: 1.18
-
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - name: Vars
-        id: vars
+          node-version: ${{ matrix.node-version }}
+      - name: npm build and test
         run: |
-          echo "::set-output name=version_tag::${GITHUB_REF/refs\/tags\//}"
-          echo "::set-output name=go_cache::$(go env GOCACHE)"
-
-      - name: Cache the build cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.vars.outputs.go_cache }}
-          key: ${{ runner.os }}-go${{ matrix.go }}-release-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-                        ${{ runner.os }}-go${{ matrix.go }}-release
-
-      - name: Run Unit tests.
-        run: make test-coverage
-      
-      - name: Upload Coverage report to CodeCov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{secrets.DEPLOY_ACCESS}}
-          file: ./coverage.txt
-
-      - name: Build and Test
-        run: make test
-
-      - name: Test Coverage
-        run: make test-coverage
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest 
-    needs: [imports, errcheck, lint, shadow, staticcheck, sec, test]
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.18
-
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - name: Build
-        run: make build
+          npm install
+          npm run build --if-present   
 
   setup:
-    needs: [build]
+    needs: [build_test]
     runs-on: ubuntu-latest
     outputs:
       repo: ${{ steps.vars.outputs.repo }}
       commit: ${{ steps.vars.outputs.commit }}
     steps:
-      - name: Deployment info
-        run: echo "Deploying '${{ github.event.inputs.ref }}' to '${{ github.event.inputs.env }}' environment"
-      - name: Verifying environment
-        run: |
-          envs=("qa stage prod")
-          [[ ${envs[*]} =~ ${{ github.event.inputs.env }} ]] || { echo "Invalid environment"; exit 1; }
       - name: Use repository
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref }}
       - name: Build variables
         id: vars
         run: |
@@ -180,13 +57,13 @@ jobs:
           name: repository
           path: |
             ${{ github.workspace }}/deploy
+            ${{ github.workspace }}/build
             ${{ github.workspace }}/docker
+            ${{ github.workspace }}/public
+            ${{ github.workspace }}/src
             ${{ github.workspace }}/.dockerignore
-            ${{ github.workspace }}/main.go
-            ${{ github.workspace }}/main_test.go
-            ${{ github.workspace }}/go.mod
-            ${{ github.workspace }}/go.sum
-  
+            ${{ github.workspace }}/package.json
+
   docker:
     needs: [setup]
     runs-on: ubuntu-latest
@@ -219,8 +96,8 @@ jobs:
           name: repository
       - name: Install kubectl
         run: |
-          curl -LO https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
-          curl -LO "https://dl.k8s.io/v1.22.0/bin/linux/amd64/kubectl.sha256"
+          curl -LO https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl
+          curl -LO "https://dl.k8s.io/v1.28.3/bin/linux/amd64/kubectl.sha256"
           echo "$(<kubectl.sha256) kubectl" | sha256sum --check
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
           kubectl version --client
@@ -228,20 +105,32 @@ jobs:
         run: |
           mkdir -p $HOME/.kube/
           case ${{ github.event.inputs.env }} in
-                qa) echo "${{ secrets.KUBE_QA_URL }}" > $HOME/.kube/config ;;
-            stage) echo "${{ secrets.KUBE_STAGE_URL }}" > $HOME/.kube/config ;;
-              prod) echo "${{ secrets.KUBE_PROD_URL }}" > $HOME/.kube/config ;;
+                qa) echo "${{ secrets.QA_CLUSTER_CONFIG }}" > $HOME/.kube/config ;;
+            stage) echo "${{ secrets.STAGE_CLUSTER_CONFIG }}" > $HOME/.kube/config ;;
+              prod) echo "${{ secrets.PROD_CLUSTER_CONFIG }}" > $HOME/.kube/config ;;
                 *) echo "Invalid environment"; exit 1;;
           esac
+
           case ${{ github.event.inputs.env }} in
-                qa) echo "${{ secrets.KUBE_QA_CONFIG }}" > $HOME/.kube/qa.yaml ;;
-            stage) echo "${{ secrets.KUBE_STAGE_CONFIG }}" > $HOME/.kube/stage.yaml ;;
-              prod) echo "${{ secrets.KUBE_PROD_CONFIG }}" > $HOME/.kube/prod.yaml ;;
+                qa) echo "${{ secrets.QA_CLUSTER_CLIENT_CERT }}" > $HOME/.kube/client.crt ;;
+            stage) echo "${{ secrets.STAGE_CLUSTER_CLIENT_CERT }}" > $HOME/.kube/client.crt ;;
+              prod) echo "${{ secrets.PROD_CLUSTER_CLIENT_CERT }}" > $HOME/.kube/client.crt ;;
+                *) echo "Invalid environment"; exit 1;;
+          esac
+
+          case ${{ github.event.inputs.env }} in
+                qa) echo "${{ secrets.QA_CLUSTER_CLIENT_KEY }}" > $HOME/.kube/client.key ;;
+            stage) echo "${{ secrets.STAGE_CLUSTER_CLIENT_KEY }}" > $HOME/.kube/client.key ;;
+              prod) echo "${{ secrets.PROD_CLUSTER_CLIENT_KEY }}" > $HOME/.kube/client.key ;;
+                *) echo "Invalid environment"; exit 1;;
+          esac
+
+          case ${{ github.event.inputs.env }} in
+                qa) echo "${{ secrets.QA_CLUSTER_ENV }}" > $HOME/.kube/qa.properties ;;
+            stage) echo "${{ secrets.STAGE_CLUSTER_ENV }}" > $HOME/.kube/stage.properties ;;
+              prod) echo "${{ secrets.PROD_CLUSTER_ENV }}" > $HOME/.kube/prod.properties ;;
                 *) echo "Invalid config"; exit 1;;
           esac
       - name: Deploy
         run: |
-          kubectl --kubeconfig $HOME/.kube/config delete secret -n ${{ github.event.inputs.env }} gf-ob-web-secret
-          kubectl --kubeconfig $HOME/.kube/config create secret generic -n ${{ github.event.inputs.env }} gf-ob-web-secret --from-env-file=$HOME/.kube/${{ github.event.inputs.env }}.yaml
           kubectl --kubeconfig $HOME/.kube/config apply -k deploy/k8s/${{ github.event.inputs.env }}
-          kubectl --kubeconfig $HOME/.kube/config patch deployment gf-ob-web-deployment --namespace=${{ github.event.inputs.env }} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"rollout\":\"`date +'%s'`\"}}}}}"
