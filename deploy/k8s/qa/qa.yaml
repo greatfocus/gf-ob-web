@@ -55,9 +55,6 @@ spec:
             requests:
               memory: 256Mi
               cpu: "0.2"
-          volumes:
-            - "./:/app"
-            - "./:/node_modules"
 
 # kubectl delete service gf-ob-web-service 
 # kubectl delete deployment gf-ob-web-deployment
