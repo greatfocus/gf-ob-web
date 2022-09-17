@@ -16,7 +16,7 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 3000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,13 +38,13 @@ spec:
         app: gf-ob-web
     spec:
       containers:
-        - name: golang
+        - name: gf-ob-web
           image: mucunga90/gf-ob-web:stage
           imagePullPolicy: Always
           ports:
             - name: http
               protocol: TCP
-              containerPort: 8000
+              containerPort: 3000
           envFrom:
             - secretRef:
                 name: gf-ob-web-secret
