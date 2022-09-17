@@ -7,6 +7,6 @@ deploy/
     
 .git/
 .github/
+.vscode/
 .idea/
 .DS_Store/
-.vscode/

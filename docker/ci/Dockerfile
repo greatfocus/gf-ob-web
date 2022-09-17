@@ -8,8 +8,7 @@
     RUN npm install
 
     # add app
-    COPY public/ public
-    COPY src/ src
+    COPY . .
     RUN npm run build
 
     EXPOSE 3000
