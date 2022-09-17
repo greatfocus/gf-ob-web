@@ -1,14 +1,14 @@
     ### STAGE 1: Build ###
     FROM node:14-alpine
      
-    WORKDIR /build
+    WORKDIR /app
     # install app dependencies
-    COPY package.json package.json
-    COPY package-lock.json package-lock.json
+    COPY package.json /app
+    COPY package-lock.json /app
     RUN npm install
 
     # add app
-    COPY . .
+    COPY . /app
     RUN npm run build
 
     EXPOSE 3000
