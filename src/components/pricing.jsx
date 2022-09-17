@@ -15,18 +15,18 @@ export const Pricing = (props) => {
         </div>
         <div className="row">
           <div className="col-xs-12 col-md-4">
-            <div class="pricing-card-wrapper-link">
-              <div class="card-header">
-                <div class="cardTitles">
+            <div className="pricing-card-wrapper-link">
+              <div className="card-header">
+                <div className="cardTitles">
                   <h3>{content ? content.package.bronze.name : "loading..."}</h3>
                 </div>
               </div>
-              <div class="divider"></div>
-              <div class="card-content">
-                <div class="cost">
+              <div className="divider"></div>
+              <div className="card-content">
+                <div className="cost">
                   <h2>{content ? content.package.bronze.cost : "loading..."}
-                    <span class="monthText">
-                      <span class="month">/{content ? content.obituary : "loading..."}</span>
+                    <span className="monthText">
+                      <span className="month">/{content ? content.obituary : "loading..."}</span>
                     </span>
                   </h2>
                 </div>
@@ -41,18 +41,18 @@ export const Pricing = (props) => {
             </div>
           </div>
           <div className="col-xs-12 col-md-4">
-            <div class="pricing-card-wrapper-link">
-              <div class="card-header">
-                <div class="cardTitles">
+            <div className="pricing-card-wrapper-link">
+              <div className="card-header">
+                <div className="cardTitles">
                   <h3>{content ? content.package.silver.name : "loading..."}</h3>
                 </div>
               </div>
-              <div class="divider"></div>
-              <div class="card-content">
-                <div class="cost">
+              <div className="divider"></div>
+              <div className="card-content">
+                <div className="cost">
                   <h2>{content ? content.package.silver.cost : "loading..."}
-                    <span class="monthText">
-                      <span class="month">/{content ? content.obituary : "loading..."}</span>
+                    <span className="monthText">
+                      <span className="month">/{content ? content.obituary : "loading..."}</span>
                     </span>
                   </h2>
                 </div>
@@ -67,18 +67,18 @@ export const Pricing = (props) => {
             </div>
           </div>
           <div className="col-xs-12 col-md-4">
-            <div class="pricing-card-wrapper-link">
-              <div class="card-header">
-                <div class="cardTitles">
+            <div className="pricing-card-wrapper-link">
+              <div className="card-header">
+                <div className="cardTitles">
                   <h3>{content ? content.package.gold.name : "loading..."}</h3>
                 </div>
               </div>
-              <div class="divider"></div>
-              <div class="card-content">
-                <div class="cost">
+              <div className="divider"></div>
+              <div className="card-content">
+                <div className="cost">
                   <h2>{content ? content.package.gold.cost : "loading..."}
-                    <span class="monthText">
-                      <span class="month">/{content ? content.obituary : "loading..."}</span>
+                    <span className="monthText">
+                      <span className="month">/{content ? content.obituary : "loading..."}</span>
                     </span>
                   </h2>
                 </div>

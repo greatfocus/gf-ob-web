@@ -24,7 +24,7 @@ export const Home = (props) => {
                     </div>
                     <div className="col-xs-12 col-md-6">
                         {" "}
-                        <div class="img-responsive home-summary-image"></div>
+                        <div className="img-responsive home-summary-image"></div>
                     </div>
                 </div>
             </div>
