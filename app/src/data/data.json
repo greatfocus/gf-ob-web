@@ -1,0 +1,58 @@
+{
+	"home": {
+		"title": "Honor your loved ones",
+		"summary": {
+			"share": "Share information with family and friends easily",
+			"updates": "Keep people updated with funeral arrangements",
+			"condolescence": "Share condolescence message",
+			"providers": "Find great funeral providers and products"
+		},
+		"getStarted": "Get started"
+	},
+	"obituaries": {
+		"title": "obituaries"
+	},
+	"pricing": {
+		"title": "See our packages pricing",
+		"obituary": "obituary",
+		"package": {
+			"bronze": {
+				"name": "Bronze Package",
+				"cost": "KES 1000",
+				"features": [
+					"Create Obituary",
+					"Sharable Link",
+					"Receive Condolence messages",
+					"Get notified with surname",
+					"Space to add Video link"
+				]
+			},
+			"silver": {
+				"name": "Silver Package",
+				"cost": "KES 3000",
+				"features": [
+					"Bronze package",
+					"Add Life Story",
+					"Export obituary card",
+					"Manage Events",
+					"Manage Condolence messages",
+					"Email notification"
+				]
+			},
+			"gold": {
+				"name": "Gold Package",
+				"cost": "KES 3000",
+				"features": [
+					"Silver package",
+					"Memories image uploads",
+					"Fund raiser"
+				]
+			}
+		}
+	},
+	"contact": {
+		"address": "Kiamumbi, Kiambu, Kenya",
+		"phone": "+254724904371",
+		"email": "info@greatfocus.com"
+	}
+}

@@ -1,0 +1,12 @@
+deploy/
+
+.dockerignore
+.gitignore
+*.md
+.env
+    
+.git/
+.github/
+.idea/
+.DS_Store/
+.vscode/
