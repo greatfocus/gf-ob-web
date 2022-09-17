@@ -1,17 +1,21 @@
-    FROM golang:1.18.2-alpine3.16 as build
+    ### STAGE 1: Build ###
+    FROM node:14.20.0 as build
      
-    WORKDIR /source
-    COPY . .
+    RUN mkdir /usr/src/app
+    WORKDIR /usr/src/app
+    ENV PATH /usr/src/app/node_modules/.bin:$PATH
+    COPY package.json /usr/src/app/package.json
      
     ARG COMMIT
-    RUN CGO_ENABLED=0 go mod tidy
-    RUN CGO_ENABLED=0 go build -ldflags "-s -w -X main.commit=${COMMIT}" -o bin/gf-ob-web main.go
+    RUN npm install --silent
+    RUN npm install react-scripts -g --silent
+    COPY . /usr/src/app
+    RUN npm run build
      
-    FROM alpine:3.12
+    ### STAGE 2: Production Environment ###
+    FROM nginx:1.13.12-alpine
+    COPY --from=build /usr/src/app/build /usr/share/nginx/html
      
-    COPY --from=build /source/bin/gf-ob-web /bin/application/gf-ob-web
-    COPY --from=build /source/database /bin/application/database
+    EXPOSE 80
      
-    EXPOSE 5002
-     
-    ENTRYPOINT ["./bin/application/gf-ob-web"]
+    CMD ["nginx", "-g", "daemon off;"]
