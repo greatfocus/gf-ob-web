@@ -33,7 +33,7 @@ jobs:
           npm run test --if-present      
 
   setup:
-    needs: [build]
+    needs: [build_test]
     runs-on: ubuntu-latest
     outputs:
       repo: ${{ steps.vars.outputs.repo }}
