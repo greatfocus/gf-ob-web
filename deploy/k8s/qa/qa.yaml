@@ -42,9 +42,6 @@ spec:
         - name: gf-ob-web
           image: mucunga90/gf-ob-web:qa
           imagePullPolicy: Always
-          envFrom:
-            - secretRef:
-                name: gf-ob-web-secret
           resources:
             limits:
               memory: 512Mi
