@@ -1,14 +1,10 @@
-    FROM node:14-alpine
-     
-    WORKDIR /build
-    COPY package.json /build
-    COPY package-lock.json /build
-    RUN npm i
+FROM node:14-alpine AS builder
+WORKDIR /app
+COPY package.json ./
+COPY yarn.lock ./
+RUN yarn install --frozen-lockfile
+COPY . .
+RUN yarn build
 
-    COPY public /build/public
-    COPY src /build/src
-    RUN npm run build
-
-    FROM httpd:alpine
-    WORKDIR /var/www/html
-    COPY --from=build /build/build/ .
+FROM nginx:1.19-alpine AS server
+COPY --from=builder ./app/build /usr/share/nginx/html
