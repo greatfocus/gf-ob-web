@@ -105,4 +105,4 @@ jobs:
           kubectl --kubeconfig $HOME/.kube/config delete secret -n qa gf-ob-web-secret
           kubectl --kubeconfig $HOME/.kube/config create secret generic -n qa gf-ob-web-secret --from-env-file=$HOME/.kube/qa.yaml
           kubectl --kubeconfig $HOME/.kube/config apply -k deploy/k8s/qa
-          kubectl --kubeconfig $HOME/.kube/config patch deployment gf-ob-web-deployment --namespace=qa -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"rollout\":\"`date +'%s'`\"}}}}}"
+          kubectl --kubeconfig $HOME/.kube/config patch deployment gf-ob-web --namespace=qa -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"rollout\":\"`date +'%s'`\"}}}}}"

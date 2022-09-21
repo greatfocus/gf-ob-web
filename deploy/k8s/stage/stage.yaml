@@ -54,6 +54,6 @@ spec:
               cpu: "0.2"
 
 # kubectl delete service gf-ob-web-service 
-# kubectl delete deployment gf-ob-web-deployment
+# kubectl delete deployment gf-ob-web
 # kubectl delete persistentvolumeclaim gf-ob-web-service-pv-claim
 # kubectl delete persistentvolume gf-ob-web-service-pv-volume
