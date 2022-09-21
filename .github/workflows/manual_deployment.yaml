@@ -118,7 +118,5 @@ jobs:
           esac
       - name: Deploy
         run: |
-          kubectl --kubeconfig $HOME/.kube/config delete secret -n ${{ github.event.inputs.env }} gf-ob-web-secret
-          kubectl --kubeconfig $HOME/.kube/config create secret generic -n ${{ github.event.inputs.env }} gf-ob-web-secret --from-env-file=$HOME/.kube/${{ github.event.inputs.env }}.yaml
           kubectl --kubeconfig $HOME/.kube/config apply -k deploy/k8s/${{ github.event.inputs.env }}
           kubectl --kubeconfig $HOME/.kube/config patch deployment gf-ob-web --namespace=${{ github.event.inputs.env }} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"rollout\":\"`date +'%s'`\"}}}}}"
