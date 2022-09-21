@@ -1,17 +1,14 @@
-    ### STAGE 1: Build ###
     FROM node:14-alpine
      
-    WORKDIR /app
-    # install app dependencies
-    COPY package.json /app
-    COPY package-lock.json /app
-    RUN npm install
+    WORKDIR /build
+    COPY package.json /build
+    COPY package-lock.json /build
+    RUN npm i
 
-    # add app
-    COPY . /app
+    COPY public /build/public
+    COPY src /build/src
     RUN npm run build
 
-    EXPOSE 3000
-
-    # start app
-    CMD ["npm", "start"]
+    FROM httpd:alpine
+    WORKDIR /var/www/html
+    COPY --from=build /build/build/ .
