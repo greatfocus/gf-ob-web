@@ -103,4 +103,3 @@ jobs:
       - name: Deploy
         run: |
           kubectl --kubeconfig $HOME/.kube/config apply -k deploy/k8s/qa
-          kubectl --kubeconfig $HOME/.kube/config patch deployment gf-ob-web --namespace=qa -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"rollout\":\"`date +'%s'`\"}}}}}"

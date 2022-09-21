@@ -119,4 +119,3 @@ jobs:
       - name: Deploy
         run: |
           kubectl --kubeconfig $HOME/.kube/config apply -k deploy/k8s/${{ github.event.inputs.env }}
-          kubectl --kubeconfig $HOME/.kube/config patch deployment gf-ob-web --namespace=${{ github.event.inputs.env }} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"rollout\":\"`date +'%s'`\"}}}}}"
