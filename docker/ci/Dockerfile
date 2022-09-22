@@ -4,7 +4,7 @@ COPY package.json ./
 COPY package-lock.json ./
 RUN npm install --silent
 COPY . .
-RUN rm -r app/build
+RUN rm -r build
 RUN npm run build
 
 FROM nginx:1.19-alpine AS server
