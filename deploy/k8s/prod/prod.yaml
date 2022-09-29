@@ -5,7 +5,7 @@ metadata:
   labels:
     app: gf-ob-web
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gf-ob-web
   ports:
